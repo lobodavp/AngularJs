@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="App" xmlns="http://www.w3.org/1999/html">
+<!--чтобы ангулар использовал наш модуль, задаём в качестве значениия дериктивы ng-app- имя нашего модуля  -->
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJs learning...Form.. two-way binding</title>
+    <!--подключаем ангулар -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <!--ссылки на уроки -->
+    <a href="https://www.youtube.com/watch?v=kWDVt6zpBbU&list=PLOCGGVKsBaGEfVDPYR2E2xFTDiKXY4o9h&index=1">Video-tutorial youtube-file</a>
+    <a href="https://www.youtube.com/watch?v=AdUj09-no4g&index=1&list=PLwNMk5BYG9ELKK9fvkFb9J_B35_GGNHb1">Video-tutorial-second parth youtube-file</a>
+    <script src="app.js"></script>
+<!-- Для правильной валидации формы необходимо - добавить форму, -установиь атрибут name для формы, через который мы будем
+к ней иметь доступ, обращаться и получать дополнительные сведенья о корректности введенных данных, -установить атрибут
+no-validate для отключения валидации встроенной в браузер. Также ангулар для валидации предоставляет свойства:
+$pristine - имеет значение true - если пользователь не взаимодействовал с элементом формы
+$dirty - имеет значение true - если пользователь взаимодействовал с элементом формы
+$valid - имеет значение true - данные введенные в элемент корректны и соответствуют требованию атрибутов, которые
+установлены для данного элемента, например удовлетворяют требованию атрибута required
+$invalid - имеет значение true - данные введенные в элемент не корректны или не соответствуют требованию атрибутов
+$error - содержит набор ошибок, связанных с тем или иным элементом на странице.
+        Angular предлставляет атрибуты для валидации:
+ng-minlength - минимальное количество введенных символов, при котором элемент считается валидным
+ng-maxlength - максимальное количество введенных символов, при котором элемент считается валидным
+ng-pattern - регулярное выражение, которое исп для проверки валидности форм
+ng-required - значение обязательно
+ Для оформления формы с проверкой введенных данных можно использовать стили, по анологии с свойствами, написанные
+ через пробел:
+ form ng.pristine { // правило для всех элементов с которыми не взаимодействовал пользователь
+  }
+ -->
+    <style>        /* валидация происходит после каждого изменения в форме.*/
+        form .ng-pristine { /* правило для всех элементов с которыми не взаимодействовал пользователь*/
+            border: 1px dotted gray;
+        }
+        form .ng-invalid.ng-dirty { /* правило для всех элементов с которыми взаимодействовал пользователь, но они неправильно заполнены*/
+            background-color: lightpink;
+        }
+        form .ng-valid.ng-dirty { /* правило для всех элементов с которыми взаимодействовал пользователь и они прошли проверку, т.е. заполнены правильно*/
+            background-color: lightgreen;
+        }
+        form .ng-invalid-required.ng-dirty { /* правило для элемента с обязательным полем*/
+        color: red;
+        font-weight: bold;
+        }
+        form .ng-invalid-email.ng-dirty { /* правило для поля email*/
+        background-color: lightgoldenrodyellow;
+        color: red;
+        }
+        span.summary.ng-invalid { /* правила для спана*/
+            color: red;
+            font-weight: bold;
+        }
+        span.summary.ng-valid {
+            color: green;
+        }
+        span.attr {
+            color: red;
+        }
+        div.error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="row">
+<div ng-controller="FormValidCtrl" style="width: 300px; margin: 10px" class="col-md-4"><!--занимаем 4 ячейки бутстрапа -->
+    <!-- Форма с недоступной кнопкой submit, пока полностью не заполнена-->
+<form name="myForm" novalidate ng-submit="addNewUser(newUser)"><!--когда форма будет отправлять данные на сервер,
+                                                                вместо этого мы запустим метод addNewUser(newUser)-->
+<div class="well"><label>Форма с недоступной кнопкой submit, пока полностью не заполнена</label><br />
+    <div class="form-group">
+        <label>Name *</label>
+        <input name="userName" type="text" class="form-control" ng-model="newUser.name" required /><!-- обязательное
+                                                                                    поле указывает атрибут required-->
+    </div>
+    <div class="form-group">
+        <label>Company</label>
+        <input name="userCompany" type="text" class="form-control" ng-model="newUser.company" /><!-- необязательное-->
+    </div>
+    <div class="form-group">
+        <label>Email *</label>
+        <input name="userEmail" type="email" class="form-control" ng-model="newUser.email" required />
+        <div class="error" ng-show="myForm.userEmail.$invalid && myForm.userEmail.$dirty">
+        {{getError(myForm.userEmail.$error)}}
+        </div>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input name="agreed" type="checkbox" ng-model="newUser.agreed" required />
+            I agree to the terms and conditions *
+        </label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" ng-disabled="myForm.$invalid">Ok</button>
+    <!--myForm.$invalid для того, чтобы работало данное выражение должно быть задано в форме атрибут name=myForm
+    $invalid содержит значение, определяющее валидность формы, если все поля заполнены без ошибок - false, если нет - true
+    если форма заполнена неверно - кнопка будет disabled-->
+</div>
+    <div class="well">
+            Message: {{message}}
+        <div>
+            Valid:
+            <span class="summary" ng-class="myForm.$valid ? 'ng-valid' : 'ng-invalid'"> <!-- применяем классы стилей в зависимости от валидности формы-->
+                {{myForm.$valid}}<!--отображаем состояние формы-->
+            </span>
+        </div>
+    </div>
+</form>
+</div>
+<div ng-controller="FormValidCtrl" style="width: 300px; margin: 10px"class="col-md-4"><!--занимаем 4 ячейки бутстрапа -->
+    <!-- Форма с доступной кнопкой submit -->
+    <form name="myForm1" novalidate ng-submit="addNewUser1(newUser, myForm1.$valid)"><!--когда форма будет отправлять данные на сервер,
+       вместо этого мы запустим метод addNewUser1(newUser, myForm1.$valid)? который принимает в качестве первого параметра
+       объект, заполненный ng-model директивой из ввода инпатов, в качестве второго параметра - состояние формы -->
+        <div class="well"><label>Форма с доступной кнопкой submit</label><br />
+            <div class="form-group">
+                <label>Name *</label>
+                <input name="userName" type="text" class="form-control" ng-model="newUser.name" required /><!-- обязательное
+                                                                                    поле указывает атрибут required-->
+                <div class="error" ng-show="showError"> <!--для показа ошибок вызываем метод getError1 на элементе формы userName -->
+                    {{getError1(myForm1.userName.$error)}}
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Company</label>
+                <input name="userCompany" type="text" class="form-control" ng-model="newUser.company" /><!--не обязательное поле-->
+                <div class="error" ng-show="showError"><!--для показа ошибок вызываем метод getError1 на элементе формы userCompany -->
+                    {{getError1(myForm1.userCompany.$error)}}
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input name="userEmail" type="email" class="form-control" ng-model="newUser.email" required /><!-- обязательное поле-->
+                <div class="error" ng-show="showError"><!--для показа ошибок вызываем метод getError1 на элементе формы userEmail -->
+                    {{getError1(myForm1.userEmail.$error)}}
+                </div>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input name="agreed" type="checkbox" ng-model="newUser.agreed" required />
+                    I agree to the terms and conditions *
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Ok</button> <!--кнопка сейчас доступна для клика-->
+        </div>
+        <div class="well">
+            Message: {{message}}
+            <div>
+                Valid:
+            <span class="summary" ng-class="myForm.$valid ? 'ng-valid' : 'ng-invalid'"> <!-- применяем классы стилей в зависимости от валидности формы-->
+                {{myForm1.$valid}}<!--отображаем состояние формы-->
+            </span>
+            </div>
+        </div>
+    </form>
+</div>
+<div ng-controller="FormValidCtrl" style="margin: 10px" class="col-md-4"><!--занимаем 4 ячейки бутстрапа -->
+    <!-- Атрибуты элемента, используемые при валидации пользовательского ввода -->
+    <form name="myForm1" novalidate>
+        <label>Атрибуты для проверки объекта $error при валидации ввода:</label>
+        <input name="sample" ng-model="inputValue" ng-required="requireValue" ng-minlength="3" ng-maxlength="10" ng-pattern="matchPattern" />
+        <!-- ng-required в скоупе изначально равно true. Если атрибут type равен email, url, number то не нужно указывать
+         ng-pattern т.к ангулар уже использует его для проверки валидности содержимого элемента-->
+        <p>Required error: <span class="attr">{{myForm1.sample.$error.required}}</span></p><!--в выражении обращаемся
+        по имени к форме, к элементу, который нужно проверить, к объекту $error, где находится список всех допущенных ошибок
+        и директивы в инпате осуществляют проверку, изначально required =true, отображает результат, при наличии ошибок меняется значение-->
+        <p>Min Length error: <span class="attr">{{myForm1.sample.$error.minlength}}</span></p>
+        <p>Max Length error: <span class="attr" class="attr">{{myForm1.sample.$error.maxlength}}</span></p>
+        <p>Pattern error: <span class="attr">{{myForm1.sample.$error.pattern}}</span></p>
+        <p>Element Valid: <span class="attr">{{myForm1.sample.$valid}}</span></p>
+    </form>
+</div>
+</div>
+</body>
+</html>

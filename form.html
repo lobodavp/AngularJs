@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="App" xmlns="http://www.w3.org/1999/html">
+<!--чтобы ангулар использовал наш модуль, задаём в качестве значениия дериктивы ng-app- имя нашего модуля  -->
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJs learning...Form.. two-way binding</title>
+    <!--подключаем ангулар -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <!--ссылки на уроки -->
+    <a href="https://www.youtube.com/watch?v=kWDVt6zpBbU&list=PLOCGGVKsBaGEfVDPYR2E2xFTDiKXY4o9h&index=1">Video-tutorial youtube-file</a>
+    <a href="https://www.youtube.com/watch?v=AdUj09-no4g&index=1&list=PLwNMk5BYG9ELKK9fvkFb9J_B35_GGNHb1">Video-tutorial-second parth youtube-file</a>
+    <script src="app.js"></script>
+    <!--Boolean attributes атрибуты, которые изменяют состояние элемента в зависимости от значения.
+ ng-checked -используется для установки значения выбран/невыбран для input
+ ng-disabled -используется для disable элемента, применяется для input и button
+ ng-readonly -используется для атрибута readonly применяется к input
+ ng-selected -используется для атрибута selected в option -->
+    <style>
+        div {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="tasksPanel" class="panel text-center well " ng-controller="FormCtrl">
+    <h3 class="panel-header">Boolean attributes</h3>
+    <div class="checkbox"><!-- во всех атрибутах мы работаем со свойством скоупа dataValue, изначально значение false, атрибут
+    удаляется из элемента, при изменении/чеке значение свойства меняется на true - добавляется значение атрибута в элемент,
+    для директивы ng-disabled="disabled", ng-readonly="readonly", ng-checked="checked", ng-selected="selected" -->
+        <label>
+            <input type="checkbox" ng-model="dataValue"/>
+            Применить атрибуты
+        </label>
+    </div>
+    <div>
+        <div class="form-group">
+            <button class="btn btn-success" ng-disabled="dataValue">ng-disabled</button>
+        </div>
+        <div class="form-group">
+            <label>
+                ng-readonly
+            <input class="form-control" value="readonly" ng-readonly="dataValue"/>
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+               <input type="checkbox"  ng-checked="dataValue"/>
+                ng-checked
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="radio"  ng-checked="dataValue"/>
+                ng-checked
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                ng-select
+                <select class="form-control">
+                    <option value="value">Text 1</option>
+                    <option value="value" ng-selected="dataValue">ng-selected</option>
+                </select>
+            </label>
+        </div>
+    </div>
+    <button type="submit" ng-disabled="myForm.$invalid">Submit</button><br /> <!-- отключение кнопки submit если есть ошибка в веденных данных -->
+    <label>
+        ng-true-value ng-false-value
+    <input name="sample" type="checkbox" ng-model="inputValue" ng-true-value="'yes'" ng-false-value="'no'"/>
+    <p>checkbox value: {{inputValue}}</p><!--ng-true-value определяет значение, которое будет задано через привязку данных
+     ng-model свойству модели, вводимое значение чекбокса попадает в модель inputValue и через директивы ng-true-value
+     и ng-false-value может быть показано строковое значение вместо булевого, будет отображаться значение директив в
+     зависимости от булевого значения чекбокса-->
+    </label><br />
+    <input type="checkbox" ng-model="confirmed" ng-change="change()" /> <!-- ng-change позволяет задать выражение,
+     которое будет срабатывать при смене значения элемента, когда пользователь взаимодействует с элементом управления,
+     при взаимодействием с первым инпутом запускается функция-счетчик, которая увеличивает значение на 1, при
+     взаимодействии пользователя со вторым чекбоксом этого не происходит, т.е значение модели первого и второго
+     инпута (true/false) меняется синхронно без увеличения счетчика, т.е во втором чекбоксе меняется програмно без
+     вызова функции change()-->
+    <input type="checkbox" ng-model="confirmed" />
+    <label for="ng-change">Confirmed</label><br />
+    <tt>boolean = {{confirmed}}</tt><br />
+    <tt>counter = {{counter}}</tt>
+</div>
+<div class="container"><!--создаем форму с динамическим добавлением введенных данных в таблицу -->
+<div class="panel panel-primary" ng-controller="FormCtrl">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h3>
+                Незавершенные задачи
+                <span class="label label-info">
+                    {{(tasks | filter : {complete : 'false'}).length}}
+                    <!-- filter позволяет выбрать из массива набор элементов и вернуть их в виде массива.
+                    Из массива tasks извлечь все объекты, которые содержат complete = false и поместить в новый массив,
+                    после чего определяется размерность нового массива и полученное значение показать на странице-->
+                </span>
+            </h3>
+        </div>
+    </div>
+        <table class="table">
+            <tr ng-repeat="task in tasks">
+                <td>{{task.action}}</td>
+                <td><input type="checkbox" ng-model="task.complete"/></td> <!-- вставляем двунаправленную привязку в
+                чекбоксе через директиву ng-model -->
+            </tr>
+        </table>
+</div>
+<div class="row" ng-controller="Form1Ctrl"> <!-- форма ввода позволяет динамически добавлять записи в таблицу-->
+    <div class="col-md-4"><!--занимаем 4 ячейки бутстрапа -->
+        <div class="well">
+            <div class="form-group-row">
+                <label for="actionText">Action</label>
+                <input id="actionText" class="form-control" ng-model="task.action" /><!-- директива устанавливает значение
+                                                             свойства action создаваемому объекту -->
+            </div>
+            <div class="form-group-row">
+                <label for="actionPriority">Priority</label>
+                <select id="actionPriority" class="form-control" ng-model="task.priority"><!-- директива устанавливает
+                                                            значение свойства priority создаваемому объекту -->
+                    <option>High</option>
+                    <option>Normal</option>
+                    <option>Low</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-block" ng-click="addTask(task)">Add task</button>
+            <!-- при введении значений в поле action и priority ангулар автоматически создает объект task и устанавливает
+            свойства, при вызове функции проверяестся наличие свойств у созданного объекта, после чего создается новый обънкт в скоупе -->
+        </div>
+    </div>
+<div class="col-md-8 panel-primary"><!--таблица занимаем 8 ячеек бутстрапа и отображает добавленные формой-ввода данные в таблице -->
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h3>
+                Незавершенные задачи
+                <span class="label label-info">
+                    {{(tasks | filter : {complete : 'false'}).length}}
+                    <!-- filter позволяет выбрать из массива набор элементов и вернуть их в виде массива.
+                    Из массива tasks извлечь все объекты, которые содержат complete = false и поместить в новый массив,
+                    после чего определяется размерность нового массива и полученное значение показать на странице-->
+                </span>
+            </h3>
+        </div>
+    </div>
+    <table class="table">
+        <tr ng-repeat="task in tasks"><!--генерируем таблицу задач -->
+            <td>{{task.action}}</td>
+            <td>{{task.priority}}</td>
+            <td><input type="checkbox" ng-model="task.complete"/></td> <!-- вставляем двунаправленную привязку в
+                чекбоксе через директиву ng-model -->
+        </tr>
+    </table>
+</div>
+</div>
+</div>
+</body>
+</html>

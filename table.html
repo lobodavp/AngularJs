@@ -1,0 +1,21 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Property1</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in items" ng-class="$even ? 'class1' : 'class2'"> <!-- генерируем элементы <tr> директивой
+        в соответствии с количеством объектов массиваи применяем класс к строкам с помощью выражения в ng-class,
+        где переменная $even содержит true если элемент четный, false - если нечетный, переменнная $odd делает всё наоборот,
+         если отключить table-hover, то будет меняться окраска с розового на голубой -->
+        <td>{{$index+1}}</td><!--$index - встроенная переменнаясодержащая номер итерации -->
+        <td>{{item.name}}</td>
+        <td>{{item.value}}</td>
+        <td>{{item.property1}}</td>
+    </tr>
+    </tbody>
+</table>

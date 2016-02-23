@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="courseListApp" xmlns="http://www.w3.org/1999/html">
+<!--чтобы ангулар использовал наш модуль, задаём в качестве значениия дериктивы ng-app- имя нашего модуля  -->
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJs learning...CourseList</title>
+    <!--подключаем ангулар -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.js"></script>
+    <a href="https://www.youtube.com/watch?v=kWDVt6zpBbU&list=PLOCGGVKsBaGEfVDPYR2E2xFTDiKXY4o9h&index=1">Video-tutorial in youtube</a>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous" rel="stylesheet" />
+
+    <script>
+        // Модель
+
+        var model = { // эти данные могут храниться на сервере и подгужаться аякс запросом
+            user: "Michael Loboda",
+            courses: [{ name: "HTML, CSS", passed: true }, //свойство в виде массива хранит объекты со свойствами и значениями
+                      { name: "JavaScript Essential", passed: true },
+                      { name: "JavaScript Advanced", passed: true },
+                      { name: "HTML5 &amp; CSS3", passed: false },
+                      { name: "AngularJS", passed: false }]
+        };
+
+        // Модуль
+
+        var courseListApp = angular.module("courseListApp", []);
+
+        // Контроллер
+
+        courseListApp.controller("CourseListCtrl", function ($scope) { //контроллер получил через депенденси инджекшен скопе,
+            // в который добавляет свойство data, в котором будет храниться модель, к этому свойству мы будем привязываться
+            // в пользовательском  интерфейсе, чтобы добавлять данные
+
+            $scope.data = model;
+
+            // Добавляем поведение, обработчик нажатия на кнопку
+            $scope.addNewCourse = function () {
+
+                $scope.data.courses.push({ // с помощью метода массива добавляем в объект скоупа новый элемент
+                    name: $scope.courseName, // это свойство будет создано при нажатии на кнопку директивой ng-click
+                    // на кнопке и директивы ng-model из данных введенных в инпате
+                    passed: false
+                });
+
+                $scope.courseName = "";
+            }
+
+            $scope.showText = function (passed) { // задаем поведение поля passed при нажатии на чекбокс
+                return passed ? "Да" : "Нет";
+            }
+
+            $scope.setStyle = function (passed) { // задаем поведение стиля при нажатии на чекбокс
+                return passed ? "color:green" : "color:red; font-weight: bold";
+               // если passe имеет значение true возвращаем green, если false - возвращаем red
+            }
+        });
+
+    </script>
+
+</head>
+
+<body ng-controller="CourseListCtrl"><!--Данная часть разметки будет работать под скоупом, который инициализирует контроллер -->
+<div class="container">
+    <div class="page-header"><!--Заголовок -->
+        <h1>Планировщик курсов.</h1>
+        <!--Вставляем выражения привязки к свойству скоупа data, куда была помещена модель и извлекаем из неё свойства юзер и количество курсов  -->
+        <h3>Пользователь: {{data.user}}. Количество курсов - {{data.courses.length}}</h3>
+    </div>
+    <div class="panel">
+        <div class="input-group"> <!--вставляем поле для ввода курса, совмещённое с кнопкой ввода-->
+            <input class="form-control" ng-model="courseName" /> <!--директива позволяет привязать введенные данные в
+            поле к  свойству скоупа .courseName -->
+                <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="addNewCourse()">Добавить курс</button>
+                    <!--директива ng-click="addNewCourse() определяет функцию-обработчик при нажатии на кнопку -->
+                </span>
+        </div>
+
+        <table class="table table-hover"> <!--Вставляем таблицу, класс бутстрапа table-hover меняет цвет фона при наведении на строку таблицы-->
+            <thead> <!--Вставляем шапку -->
+            <tr>
+                <th>Курс</th>
+                <th></th>
+                <th>Пройден</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="course in data.courses">  <!--Вставляем строки таблицы -->
+<!--директив ng-repeat говорит, что блок разметки <tr> и вложенные <td> должны быть повторен для каждого элемента <course>
+                   in массиве скоупа <data.courses>, такая конструкция работает аналогично циклу for each -->
+                <td>{{course.name}}</td> <!--Вставляем строки с названием курса -->
+                <!-- CheckBox чрез директиву ng-model связан со свойством passed -->
+                <td><input type="checkbox" ng-model="course.passed" /></td> <!--Вставляем инпут с тайпом чекбокс,
+                в котором через директиву ng-model="course.passed" делаем привязку к свойству объекта passed, где перезаписуем false/true-->
+                <td>
+                            <span style="{{setStyle(course.passed)}}"> <!--В зависимости от свойства объекта passed false/true  будет меняться стиль
+                            в метод setStyle объекта скоуп, который задает поведение, передаем текущее значение свойства .passed
+                            при генерации этого поля изначально было значение из объекта-->
+                                {{showText(course.passed)}} <!--- вызываем метод поведения свойства passed скоупа -->
+                            </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
